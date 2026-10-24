@@ -66,7 +66,10 @@ financial aid, a scholarship or a visa depends on your credits."
 2. Run `python3 scripts/seats.py sections --term "<term>" --course "<course>"`. It calls
    ASU class search directly, so it works even if the seat service is down.
 3. Compare section days and times with the student's schedule from Canvas or Google
-   Calendar. Show only the sections that fit (up to 3), with their class numbers.
+   Calendar, and with the campus the student attends (each line shows Tempe, Poly, West,
+   Downtown or ASU Online; ASU Online sections are for ASU Online students only). Show only
+   the sections that fit (up to 3), with their class numbers, then ask which to watch.
+   If you don't know their schedule yet, show the best few and ask which days and campus work.
    Mention reserved seats when the output does: those seats are held for certain majors.
 4. Ask which to watch. On yes, run for each:
    `python3 scripts/seats.py watch --term "<term>" --class <class number>`

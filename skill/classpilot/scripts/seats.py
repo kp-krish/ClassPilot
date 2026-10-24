@@ -176,7 +176,29 @@ def parse_section(raw):
         "has_reserved": c.get("HASACTIVERESERVEDSEATS") == "Y",
         "withdraw_by": (c.get("DROPWITHPENALTY") or "")[:10],
         "complete_withdraw_by": (c.get("WITHDRAWWITHPENALTY") or "")[:10],
+        "where": _where(c),
+        "dates": f"{_short_date(c.get('STARTDATE'))}-{_short_date(c.get('ENDDATE'))}",
     }
+
+
+def _where(c):
+    """'Poly AGBC154', 'Tempe BYAC110' or 'ASU Online (ASU Online students only)'."""
+    try:
+        names = [b.get("NAME", "") for b in json.loads(c.get("LOCATIONBUILDING") or "[]")]
+    except ValueError:
+        names = []
+    if c.get("LOCATION") == "ASUONLINE":
+        return "ASU Online (ASU Online students only)"
+    rooms = [n.replace(" - ", " ") for n in names if n and not n.startswith("Internet")]
+    return rooms[0] if rooms else (c.get("LOCATION") or "").title()
+
+
+def _short_date(value):
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})", value or "")
+    if not m:
+        return "?"
+    months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+    return f"{months[int(m.group(2)) - 1]} {int(m.group(3))}"
 
 
 def fetch_sections(term, course, sample=False):
@@ -240,9 +262,15 @@ def cmd_sections(args):
         raise Fail(NOT_FOUND, f"no sections of {args.course} found for {term_label(term)}")
     print(f"{sections[0]['course']}, {term_label(term)}: {len(sections)} sections")
     for s in sorted(sections, key=lambda s: (-s["open"], s["class_nbr"])):
-        seats = f"{s['open']} open of {s['cap']}" if s["open"] else f"FULL ({s['cap']} seats)"
-        note = f", {s['reserved']} more reserved for certain majors" if s["reserved"] else ""
-        print(f"- #{s['class_nbr']} {_when(s)}, {s['instructor']}: {seats}{note}")
+        if s["open"]:
+            seats = f"{s['open']} open of {s['cap']}"
+            note = f", {s['reserved']} more reserved for certain majors" if s["reserved"] else ""
+        elif s["reserved"]:
+            seats, note = f"no open seats for everyone; {s['reserved']} reserved for certain majors", ""
+        else:
+            seats, note = f"FULL ({s['cap']} seats)", ""
+        print(f"- #{s['class_nbr']} {_when(s)}, {s['where']}, session {s['session']} ({s['dates']}), "
+              f"{s['instructor']}: {seats}{note}")
     return OK
 
 

@@ -30,7 +30,11 @@
     "DROPWITHPENALTY": "2027-01-29 00:00:00.0",
     "WITHDRAWWITHPENALTY": "2027-03-02 00:00:00.0",
     "ENRLCAP": "150",
-    "ENRLTOT": "35"
+    "ENRLTOT": "35",
+    "LOCATION": "ASUONLINE",
+    "LOCATIONBUILDING": "[{\"NAMEFORSORTING\":\"ASU ONLINE\",\"NAME\":\"ASU Online\",\"DESCR\":\"ASU Online\",\"ADDRESS\":\"Fully online, asynchronous courses available exclusively to ASU Online students.\",\"URL\":\"https://asuonline.asu.edu/\"}]",
+    "STARTDATE": "2027-01-11 00:00:00.0",
+    "ENDDATE": "2027-03-02 00:00:00.0"
    },
    "seatInfo": {
     "ENRL_CAP": 150,
@@ -66,7 +70,11 @@
     "DROPWITHPENALTY": "2027-04-02 00:00:00.0",
     "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
     "ENRLCAP": "150",
-    "ENRLTOT": "57"
+    "ENRLTOT": "57",
+    "LOCATION": "ASUONLINE",
+    "LOCATIONBUILDING": "[{\"NAMEFORSORTING\":\"ASU ONLINE\",\"NAME\":\"ASU Online\",\"DESCR\":\"ASU Online\",\"ADDRESS\":\"Fully online, asynchronous courses available exclusively to ASU Online students.\",\"URL\":\"https://asuonline.asu.edu/\"}]",
+    "STARTDATE": "2027-03-15 00:00:00.0",
+    "ENDDATE": "2027-04-30 00:00:00.0"
    },
    "seatInfo": {
     "ENRL_CAP": 150,
@@ -101,7 +109,11 @@
     "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
     "ENRLCAP": "50",
     "ENRLTOT": "9",
-    "SAMPLE_RESERVED_OPEN": 22
+    "SAMPLE_RESERVED_OPEN": 22,
+    "LOCATION": "POLY",
+    "LOCATIONBUILDING": "[{\"NAMEFORSORTING\":\"POLY - AGBC154\",\"NAME\":\"Poly - AGBC154\",\"DESCR\":\"ASU at Tempe\",\"ADDRESS\":\"Agribusiness Center 154 (Poly)\",\"URL\":\"http://www.asu.edu/map/interactive/?psCode=AGBC\"}]",
+    "STARTDATE": "2027-01-11 00:00:00.0",
+    "ENDDATE": "2027-04-30 00:00:00.0"
    },
    "seatInfo": {
     "ENRL_CAP": 50,
@@ -139,7 +151,11 @@
     "DROPWITHPENALTY": "2027-04-04 00:00:00.0",
     "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
     "ENRLCAP": "80",
-    "ENRLTOT": "65"
+    "ENRLTOT": "65",
+    "LOCATION": "TEMPE",
+    "LOCATIONBUILDING": "[{\"NAMEFORSORTING\":\"TEMPE - BYAC110\",\"NAME\":\"Tempe - BYAC110\",\"DESCR\":\"ASU at Tempe\",\"ADDRESS\":\"Artisn Crt Brckyrd 110 (Tempe)\",\"URL\":\"http://www.asu.edu/map/interactive/?psCode=BYAC\"},{\"NAMEFORSORTING\":\"INTERNET - HYBRID\",\"NAME\":\"Internet - Hybrid\",\"DESCR\":\"Hybrid classes\",\"ADDRESS\":\"Hybrid classes have one or more in person meetings.\",\"URL\":\"\"}]",
+    "STARTDATE": "2027-01-11 00:00:00.0",
+    "ENDDATE": "2027-04-30 00:00:00.0"
    },
    "seatInfo": {
     "ENRL_CAP": 80,
@@ -177,7 +193,11 @@
     "DROPWITHPENALTY": "2027-04-04 00:00:00.0",
     "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
     "ENRLCAP": "80",
-    "ENRLTOT": "20"
+    "ENRLTOT": "20",
+    "LOCATION": "TEMPE",
+    "LOCATIONBUILDING": "[{\"NAMEFORSORTING\":\"TEMPE - BYAC110\",\"NAME\":\"Tempe - BYAC110\",\"DESCR\":\"ASU at Tempe\",\"ADDRESS\":\"Artisn Crt Brckyrd 110 (Tempe)\",\"URL\":\"http://www.asu.edu/map/interactive/?psCode=BYAC\"},{\"NAMEFORSORTING\":\"INTERNET - HYBRID\",\"NAME\":\"Internet - Hybrid\",\"DESCR\":\"Hybrid classes\",\"ADDRESS\":\"Hybrid classes have one or more in person meetings.\",\"URL\":\"\"}]",
+    "STARTDATE": "2027-01-11 00:00:00.0",
+    "ENDDATE": "2027-04-30 00:00:00.0"
    },
    "seatInfo": {
     "ENRL_CAP": 80,
