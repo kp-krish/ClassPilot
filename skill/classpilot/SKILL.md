@@ -84,6 +84,8 @@ financial aid, a scholarship or a visa depends on your credits."
    gives, word for word, right away; it is time-sensitive and the student asked for it.
    If it says No new seat openings, send nothing."
 6. On an opening, text it, say plainly that seats go fast, and ask "Open enrollment?".
+   Every alert is new: the seat service only writes one when a section it saw full has
+   seats again, so send it even if the section had open seats when the watch started.
    On yes, open the Add class link from the alert (or the Swap class link if they are
    swapping sections) in the browser and hand it to the student to sign in and confirm.
    Never enroll, drop or swap for them.

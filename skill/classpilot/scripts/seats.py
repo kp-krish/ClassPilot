@@ -346,9 +346,20 @@ def cmd_watches(args):
     return OK
 
 
+def _ago(seen_at):
+    """' (seen 12 min ago)' from an ISO UTC time, or ''."""
+    try:
+        t = time.mktime(time.strptime(seen_at, "%Y-%m-%dT%H:%M:%SZ")) - time.timezone
+    except (TypeError, ValueError):
+        return ""
+    mins = max(0, int((time.time() - t) // 60))
+    return " (seen just now)" if mins < 2 else f" (seen {mins} min ago)" if mins < 120 else f" (seen {mins // 60} h ago)"
+
+
 def cmd_alerts(args):
     if args.sample:
-        rows = [{"course": "CSE 230", "class_nbr": "27345", "term": "Spring 2027", "open": 2, "reserved_open": 0}]
+        rows = [{"course": "CSE 230", "class_nbr": "27345", "term": "Spring 2027", "open": 2, "reserved_open": 0,
+                 "seen_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 300))}]
     elif args.recent:
         rows = api("GET", "/alerts", watcher_id=require_watcher(), recent="1")
     else:
@@ -359,11 +370,13 @@ def cmd_alerts(args):
         return OK
     # Worded as an instruction: a scheduled check-in reads this with no other context.
     print("ACTION: text the student this message now, then wait for their yes before opening a link.")
+    print("Each alert is a fresh opening: the seat service saw this section full, then open again,")
+    print("so send it even if the section had open seats earlier.")
     print()
     for r in rows:
         extra = f" ({r['reserved_open']} more reserved for certain majors)" if r.get("reserved_open") else ""
-        print(f"Seat open: {r['course']} #{r['class_nbr']} ({r['term']}), {r['open']} open{extra}. "
-              f"Seats go fast. Open enrollment?")
+        print(f"Seat open: {r['course']} #{r['class_nbr']} ({r['term']}) was full and now has "
+              f"{r['open']} open{extra}{_ago(r.get('seen_at'))}. Seats go fast. Open enrollment?")
     print()
     for t in sorted({r["term"] for r in rows}):
         code = term_code(t)
