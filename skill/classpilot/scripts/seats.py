@@ -119,6 +119,9 @@ def asu(path, **params):
     for attempt in range(2):
         try:
             return _request(url, headers=ASU_HEADERS)
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403, 429) or attempt:  # blocked: retrying won't help
+                raise Fail(ASU_DOWN, f"ASU class search refused the request ({e.code})")
         except (urllib.error.URLError, TimeoutError, ValueError) as e:
             if attempt:
                 raise Fail(ASU_DOWN, f"ASU class search unreachable: {e}")
@@ -206,14 +209,34 @@ def fetch_sections(term, course, sample=False):
     if sample:
         rows = json.loads(SAMPLE.read_text())["classes"]
     else:
-        rows = asu("classes", refine="Y", campusOrOnlineSelection="A", honors="F", promod="F",
-                   searchType="all", subject=subject, catalogNbr=number, term=term).get("classes") or []
+        try:
+            rows = asu("classes", refine="Y", campusOrOnlineSelection="A", honors="F", promod="F",
+                       searchType="all", subject=subject, catalogNbr=number, term=term).get("classes") or []
+        except Fail as direct:
+            # ASU blocks some cloud networks; the seat service fetches the same data from AWS.
+            try:
+                return [from_api(r) for r in api("GET", "/sections", term=term, course=f"{subject} {number}")]
+            except Fail:
+                raise Fail(ASU_DOWN, f"{direct}; the seat service could not reach ASU either")
     sections = [parse_section(r) for r in rows]
     for s in sections:
         if s["has_reserved"] and s["open"] > 0:
             s["reserved"] = min(s["open"], reserved_open(s, sample))
             s["open"] -= s["reserved"]
     return sections
+
+
+def from_api(r):
+    """A section from the Seat API's GET /sections, in parse_section's shape."""
+    return {
+        "raw": {}, "class_nbr": r["class_nbr"], "course": r["course"], "session": r.get("session"),
+        "mode": MODES.get(r.get("mode"), r.get("mode")), "days": r.get("days", ""),
+        "start": r.get("start", ""), "end": r.get("end", ""), "instructor": r.get("instructor", "Staff"),
+        "cap": r.get("cap", 0), "open": r.get("open", 0), "reserved": r.get("reserved_open", 0),
+        "has_reserved": r.get("has_reserved", False), "withdraw_by": r.get("withdraw_by", ""),
+        "complete_withdraw_by": r.get("complete_withdraw_by", ""),
+        "where": r.get("where", ""), "dates": r.get("dates", ""),
+    }
 
 
 def reserved_open(s, sample=False):

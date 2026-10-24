@@ -115,6 +115,29 @@ def _date(value):
     return (value or "")[:10]
 
 
+def _where(c):
+    """'Poly AGBC154', 'Tempe BYAC110' or 'ASU Online (ASU Online students only)'.
+
+    CAMPUS reads TEMPE even for Poly sections, so use the building list.
+    """
+    if c.get("LOCATION") == "ASUONLINE":
+        return "ASU Online (ASU Online students only)"
+    try:
+        names = [b.get("NAME", "") for b in json.loads(c.get("LOCATIONBUILDING") or "[]")]
+    except ValueError:
+        names = []
+    rooms = [n.replace(" - ", " ") for n in names if n and not n.startswith("Internet")]
+    return rooms[0] if rooms else (c.get("LOCATION") or "").title()
+
+
+def _short_date(value):
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})", value or "")
+    if not m:
+        return "?"
+    months = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+    return f"{months[int(m.group(2)) - 1]} {int(m.group(3))}"
+
+
 def parse_section(raw):
     c = raw.get("CLAS", {})
     seats = raw.get("seatInfo") or {}
@@ -144,6 +167,8 @@ def parse_section(raw):
         # the complete session withdrawal deadline (the last day of classes).
         "withdraw_by": _date(c.get("DROPWITHPENALTY")),
         "complete_withdraw_by": _date(c.get("WITHDRAWWITHPENALTY")),
+        "where": _where(c),
+        "dates": f"{_short_date(c.get('STARTDATE'))}-{_short_date(c.get('ENDDATE'))}",
         "_career": c.get("ACADCAREER"),
         "_crse_id": c.get("CRSEID"),
         "_offer_nbr": c.get("CRSEOFFERNBR"),

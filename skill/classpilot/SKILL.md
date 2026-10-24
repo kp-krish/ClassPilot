@@ -23,7 +23,8 @@ Grade math works for any school. Section lookups, deadlines and seat watching ar
 Grades never leave the student's sandbox: `scripts/grades.py` runs locally and sends nothing.
 To watch a class, `scripts/seats.py` sends the ClassPilot seat service a random watcher ID,
 the term and class numbers. Nothing else: no name, email, ASU ID or grades. Section lookups
-and deadlines come straight from ASU's public class search. Tell the student this in one
+and deadlines come from ASU's public class search; when ASU blocks the sandbox, they go
+through the seat service, which then sees only the course and term. Tell the student this in one
 line the first time they turn on a seat watch.
 
 ## Setup (first use only)
@@ -63,8 +64,9 @@ financial aid, a scholarship or a visa depends on your credits."
 
 1. Get the course and term ("Spring 2027"). If the student names a section, confirm its
    5-digit class number.
-2. Run `python3 scripts/seats.py sections --term "<term>" --course "<course>"`. It calls
-   ASU class search directly, so it works even if the seat service is down.
+2. Run `python3 scripts/seats.py sections --term "<term>" --course "<course>"`. It tries
+   ASU class search directly, then the ClassPilot seat service, so trust its output and
+   don't look the class up in the browser instead; ASU's catalog page needs JavaScript.
 3. Compare section days and times with the student's schedule from Canvas or Google
    Calendar, and with the campus the student attends (each line shows Tempe, Poly, West,
    Downtown or ASU Online; ASU Online sections are for ASU Online students only). Show only
@@ -122,7 +124,7 @@ Each script prints one `error:` line and exits with a code. Reply with one line:
 | seats.py 6 | "I can't find that class for <term>. What's the 5-digit class number?" |
 | seats.py 7 | "You're watching the max of 10 classes. Want to stop watching one?" |
 | seats.py 8 | Check the term ("Spring 2027") and the 5-digit class number, then run it again. |
-| seats.py 9 | "ASU class search isn't responding. I'll try again in a bit." |
+| seats.py 9 | "ASU class search isn't responding right now. Try again in a few minutes, or check https://catalog.apps.asu.edu/catalog/classes" |
 | Canvas not connected | "Connect Canvas and I can pull your grades, or tell me your grade and what's left." |
 
 ## Trying it without an account
