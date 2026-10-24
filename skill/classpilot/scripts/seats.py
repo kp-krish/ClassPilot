@@ -349,18 +349,27 @@ def cmd_watches(args):
 def cmd_alerts(args):
     if args.sample:
         rows = [{"course": "CSE 230", "class_nbr": "27345", "term": "Spring 2027", "open": 2, "reserved_open": 0}]
+    elif args.recent:
+        rows = api("GET", "/alerts", watcher_id=require_watcher(), recent="1")
     else:
         rows = api("GET", "/alerts", watcher_id=require_watcher())
     if not rows:
-        print("No new seat openings")
+        print("No new seat openings in the last 24 hours." if args.recent
+              else "No new seat openings. Send the student nothing.")
         return OK
+    # Worded as an instruction: a scheduled check-in reads this with no other context.
+    print("ACTION: text the student this message now, then wait for their yes before opening a link.")
+    print()
     for r in rows:
         extra = f" ({r['reserved_open']} more reserved for certain majors)" if r.get("reserved_open") else ""
-        print(f"SEAT OPEN: {r['course']} #{r['class_nbr']} ({r['term']}), {r['open']} open{extra}")
+        print(f"Seat open: {r['course']} #{r['class_nbr']} ({r['term']}), {r['open']} open{extra}. "
+              f"Seats go fast. Open enrollment?")
+    print()
     for t in sorted({r["term"] for r in rows}):
         code = term_code(t)
-        print(f"Add class ({t}): {ENROLL_URL.format(term=code)}")
-        print(f"Swap class ({t}): {SWAP_URL.format(term=code)}")
+        print(f"If yes, open in the browser and hand it to the student ({t}):")
+        print(f"Add class: {ENROLL_URL.format(term=code)}")
+        print(f"Swap class: {SWAP_URL.format(term=code)}")
     return OK
 
 
@@ -386,7 +395,8 @@ def main(argv=None):
     add("watch", cmd_watch, term, klass)
     add("unwatch", cmd_unwatch, klass)
     add("watches", cmd_watches)
-    add("alerts", cmd_alerts)
+    add("alerts", cmd_alerts, lambda sp: sp.add_argument(
+        "--recent", action="store_true", help="every opening from the last 24 hours, even ones already fetched"))
 
     args = p.parse_args(argv)
     if getattr(args, "class_nbr", None) and not re.fullmatch(r"\d{5}", args.class_nbr):

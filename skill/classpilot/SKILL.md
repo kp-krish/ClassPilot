@@ -77,15 +77,19 @@ financial aid, a scholarship or a visa depends on your credits."
    `python3 scripts/seats.py watch --term "<term>" --class <class number>`
    If it says seats are open right now, tell the student at once; there is nothing to wait for.
 5. Offer a recurring check-in: "Want me to check for openings every 15 minutes?" Use the
-   shortest interval Cubbie allows. Word it to stand alone:
-   "ClassPilot seat check: run `python3 scripts/seats.py alerts` from the classpilot
-   Skill folder. If it prints SEAT OPEN lines, text the student the opening and ask
-   'Open enrollment?'. If it prints No new seat openings, send nothing."
+   shortest interval Cubbie allows. Create it with exactly this wording, so it works days
+   later on its own:
+   "ClassPilot seat check: run `python3 scripts/seats.py alerts` in the classpilot Skill
+   folder. If the output starts with ACTION, text the student the Seat open message it
+   gives, word for word, right away; it is time-sensitive and the student asked for it.
+   If it says No new seat openings, send nothing."
 6. On an opening, text it, say plainly that seats go fast, and ask "Open enrollment?".
    On yes, open the Add class link from the alert (or the Swap class link if they are
    swapping sections) in the browser and hand it to the student to sign in and confirm.
    Never enroll, drop or swap for them.
-7. "What am I watching?" runs `python3 scripts/seats.py watches`. "Stop watching
+7. "Any seat openings?" or "did a seat open?" runs `python3 scripts/seats.py alerts --recent`,
+   which shows every opening from the last 24 hours, including ones a check-in already
+   fetched. "What am I watching?" runs `python3 scripts/seats.py watches`. "Stop watching
    <class>" runs `python3 scripts/seats.py unwatch --class <class number>`. When nothing
    is left to watch, offer to remove the recurring check-in.
 

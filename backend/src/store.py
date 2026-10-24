@@ -112,12 +112,21 @@ def add_alert(watcher_id, section):
     })
 
 
-def pop_alerts(watcher_id):
-    """Return and delete pending alerts, so an opening is never sent twice."""
+def take_alerts(watcher_id, recent=False):
+    """New alerts, marked delivered so a normal check returns each once.
+
+    Delivered alerts stay until their 24-hour TTL, so recent=True can show them
+    again if a check-in fetched an alert but never told the student.
+    """
     items = _query_all(alerts, KeyConditionExpression=Key("watcher_id").eq(watcher_id))
     now = int(time.time())
-    fresh = [a for a in items if int(a.get("expires_at", now + 1)) > now]
-    with alerts.batch_writer() as batch:
-        for a in items:
-            batch.delete_item(Key={"watcher_id": watcher_id, "seen_at": a["seen_at"]})
-    return fresh
+    items = [a for a in items if int(a.get("expires_at", now + 1)) > now]
+    out = items if recent else [a for a in items if not a.get("delivered_at")]
+    stamp = now_iso()
+    for a in out:
+        if not a.get("delivered_at"):
+            alerts.update_item(
+                Key={"watcher_id": watcher_id, "seen_at": a["seen_at"]},
+                UpdateExpression="SET delivered_at = :d",
+                ExpressionAttributeValues={":d": stamp})
+    return out

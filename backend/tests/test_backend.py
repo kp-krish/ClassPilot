@@ -82,6 +82,9 @@ def test_watch_flow_and_alerts(aws):
     status, alerts = call(api, "GET /alerts", query={"watcher_id": WATCHER})
     assert status == 200 and [(a["class_nbr"], a["open"]) for a in alerts] == [("27345", 2)]
     assert call(api, "GET /alerts", query={"watcher_id": WATCHER})[1] == []
+    # a check-in that fetched it but never told the student can still recover it
+    status, recent = call(api, "GET /alerts", query={"watcher_id": WATCHER, "recent": "1"})
+    assert [(a["class_nbr"], a["delivered_before"]) for a in recent] == [("27345", True)]
 
     # stays open: no repeat alert
     assert poller.handler({}, None)["alerts"] == 0

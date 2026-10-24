@@ -147,12 +147,14 @@ def get_alerts(event):
     watcher_id = _watcher(q.get("watcher_id"))
     store.touch_watches(watcher_id, store.list_watches(watcher_id))
     out = []
-    for a in store.pop_alerts(watcher_id):
+    recent = q.get("recent") in ("1", "true", "yes")
+    for a in store.take_alerts(watcher_id, recent):
         out.append({
             "class_nbr": a["class_nbr"], "term": terms.term_label(a["term"]),
             "course": a["course"], "open": a["open"],
             "reserved_open": a.get("reserved_open", 0),
             "seen_at": a["seen_at"].split("#")[0],
+            "delivered_before": bool(a.get("delivered_at")) and recent,
         })
     return 200, out
 
@@ -168,6 +170,7 @@ ROUTES = {
 
 
 def handler(event, context):
+    log.info("route %s", event.get("routeKey"))
     route = ROUTES.get(event.get("routeKey"))
     if not route:
         return respond(404, {"error": "no such route"})
