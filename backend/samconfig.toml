@@ -1,0 +1,12 @@
+version = 0.1
+
+[default.global.parameters]
+stack_name = "classpilot"
+region = "us-east-2"
+
+[default.deploy.parameters]
+resolve_s3 = true
+s3_prefix = "classpilot"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+fail_on_empty_changeset = false

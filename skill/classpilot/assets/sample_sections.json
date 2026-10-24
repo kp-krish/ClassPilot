@@ -1,0 +1,188 @@
+{
+ "note": "Trimmed ASU class search response for CSE 230, Spring 2027 (term 2271), captured 2026-10-24.",
+ "classes": [
+  {
+   "CLAS": {
+    "STRM": "2271",
+    "CLASSNBR": "15241",
+    "CRSEID": "104185",
+    "CRSEOFFERNBR": "1",
+    "CLASSSECTION": "2101",
+    "SESSIONCODE": "A",
+    "SUBJECT": "CSE",
+    "CATALOGNBR": "230",
+    "TITLE": "Computer Org/Assemb Lang Prog",
+    "CAMPUS": "TEMPE",
+    "INSTRUCTIONMODE": "OL",
+    "ACADCAREER": "UGRD",
+    "CLASSTYPE": "E",
+    "DAYLIST": "",
+    "STARTTIMES": [
+     null
+    ],
+    "ENDTIMES": [
+     null
+    ],
+    "INSTRUCTORSLIST": [
+     "Soumya Indela"
+    ],
+    "HASACTIVERESERVEDSEATS": "N",
+    "DROPWITHPENALTY": "2027-01-29 00:00:00.0",
+    "WITHDRAWWITHPENALTY": "2027-03-02 00:00:00.0",
+    "ENRLCAP": "150",
+    "ENRLTOT": "35"
+   },
+   "seatInfo": {
+    "ENRL_CAP": 150,
+    "ENRL_TOT": 35
+   }
+  },
+  {
+   "CLAS": {
+    "STRM": "2271",
+    "CLASSNBR": "15242",
+    "CRSEID": "104185",
+    "CRSEOFFERNBR": "1",
+    "CLASSSECTION": "2201",
+    "SESSIONCODE": "B",
+    "SUBJECT": "CSE",
+    "CATALOGNBR": "230",
+    "TITLE": "Computer Org/Assemb Lang Prog",
+    "CAMPUS": "TEMPE",
+    "INSTRUCTIONMODE": "OL",
+    "ACADCAREER": "UGRD",
+    "CLASSTYPE": "E",
+    "DAYLIST": "",
+    "STARTTIMES": [
+     null
+    ],
+    "ENDTIMES": [
+     null
+    ],
+    "INSTRUCTORSLIST": [
+     "Ozgur Ozmen"
+    ],
+    "HASACTIVERESERVEDSEATS": "N",
+    "DROPWITHPENALTY": "2027-04-02 00:00:00.0",
+    "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
+    "ENRLCAP": "150",
+    "ENRLTOT": "57"
+   },
+   "seatInfo": {
+    "ENRL_CAP": 150,
+    "ENRL_TOT": 57
+   }
+  },
+  {
+   "CLAS": {
+    "STRM": "2271",
+    "CLASSNBR": "15951",
+    "CRSEID": "104185",
+    "CRSEOFFERNBR": "1",
+    "CLASSSECTION": "3001",
+    "SESSIONCODE": "C",
+    "SUBJECT": "CSE",
+    "CATALOGNBR": "230",
+    "TITLE": "Computer Org/Assemb Lang Prog",
+    "CAMPUS": "TEMPE",
+    "INSTRUCTIONMODE": "P",
+    "ACADCAREER": "UGRD",
+    "CLASSTYPE": "E",
+    "DAYLIST": "M W",
+    "STARTTIMES": [
+     "3:00 PM"
+    ],
+    "ENDTIMES": [
+     "4:15 PM"
+    ],
+    "INSTRUCTORSLIST": null,
+    "HASACTIVERESERVEDSEATS": "Y",
+    "DROPWITHPENALTY": "2027-04-04 00:00:00.0",
+    "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
+    "ENRLCAP": "50",
+    "ENRLTOT": "9",
+    "SAMPLE_RESERVED_OPEN": 22
+   },
+   "seatInfo": {
+    "ENRL_CAP": 50,
+    "ENRL_TOT": 9
+   }
+  },
+  {
+   "CLAS": {
+    "STRM": "2271",
+    "CLASSNBR": "27345",
+    "CRSEID": "104185",
+    "CRSEOFFERNBR": "1",
+    "CLASSSECTION": "1005",
+    "SESSIONCODE": "C",
+    "SUBJECT": "CSE",
+    "CATALOGNBR": "230",
+    "TITLE": "Computer Org/Assemb Lang Prog",
+    "CAMPUS": "TEMPE",
+    "INSTRUCTIONMODE": "HY",
+    "ACADCAREER": "UGRD",
+    "CLASSTYPE": "E",
+    "DAYLIST": "T<br/>&nbsp;",
+    "STARTTIMES": [
+     "12:00 PM",
+     null
+    ],
+    "ENDTIMES": [
+     "1:15 PM",
+     null
+    ],
+    "INSTRUCTORSLIST": [
+     "Swathi Punathumkandi"
+    ],
+    "HASACTIVERESERVEDSEATS": "N",
+    "DROPWITHPENALTY": "2027-04-04 00:00:00.0",
+    "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
+    "ENRLCAP": "80",
+    "ENRLTOT": "65"
+   },
+   "seatInfo": {
+    "ENRL_CAP": 80,
+    "ENRL_TOT": 65
+   }
+  },
+  {
+   "CLAS": {
+    "STRM": "2271",
+    "CLASSNBR": "27346",
+    "CRSEID": "104185",
+    "CRSEOFFERNBR": "1",
+    "CLASSSECTION": "1006",
+    "SESSIONCODE": "C",
+    "SUBJECT": "CSE",
+    "CATALOGNBR": "230",
+    "TITLE": "Computer Org/Assemb Lang Prog",
+    "CAMPUS": "TEMPE",
+    "INSTRUCTIONMODE": "HY",
+    "ACADCAREER": "UGRD",
+    "CLASSTYPE": "E",
+    "DAYLIST": "Th<br/>&nbsp;",
+    "STARTTIMES": [
+     "12:00 PM",
+     null
+    ],
+    "ENDTIMES": [
+     "1:15 PM",
+     null
+    ],
+    "INSTRUCTORSLIST": [
+     "Swathi Punathumkandi"
+    ],
+    "HASACTIVERESERVEDSEATS": "N",
+    "DROPWITHPENALTY": "2027-04-04 00:00:00.0",
+    "WITHDRAWWITHPENALTY": "2027-04-30 00:00:00.0",
+    "ENRLCAP": "80",
+    "ENRLTOT": "20"
+   },
+   "seatInfo": {
+    "ENRL_CAP": 80,
+    "ENRL_TOT": 20
+   }
+  }
+ ]
+}

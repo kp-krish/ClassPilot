@@ -1,0 +1,12 @@
+{
+  "course": "CSE 230",
+  "scale": {"A": 90, "B": 80, "C": 70, "D": 60},
+  "categories": [
+    {"name": "Homework", "weight": 0.25, "earned": 0.70, "left": 0.0},
+    {"name": "Exams", "weight": 0.60, "earned": 0.42, "left": 0.45},
+    {"name": "Labs", "weight": 0.15, "earned": 0.65, "left": 0.0}
+  ],
+  "drop_lowest": [],
+  "deadline": "2026-11-04",
+  "today": "2026-10-24"
+}

@@ -1,0 +1,187 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: ClassPilot seat watcher - Seat API, 1-minute seat poller, DynamoDB store.
+
+Parameters:
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: Optional email for CloudWatch alarms and the AWS Budget alerts. Leave empty to skip.
+
+Conditions:
+  HasEmail: !Not [!Equals [!Ref AlertEmail, ""]]
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Architectures: [arm64]
+    MemorySize: 256
+    CodeUri: src/
+    Environment:
+      Variables:
+        WATCHES_TABLE: !Ref WatchesTable
+        SECTIONS_TABLE: !Ref SectionsTable
+        ALERTS_TABLE: !Ref AlertsTable
+
+Resources:
+  # --- Store -----------------------------------------------------------------
+  WatchesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: classpilot-watches
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: watcher_id, AttributeType: S }
+        - { AttributeName: class_nbr, AttributeType: S }
+      KeySchema:
+        - { AttributeName: watcher_id, KeyType: HASH }
+        - { AttributeName: class_nbr, KeyType: RANGE }
+      TimeToLiveSpecification: { AttributeName: expires_at, Enabled: true }
+
+  SectionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: classpilot-sections
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: term, AttributeType: S }
+        - { AttributeName: class_nbr, AttributeType: S }
+      KeySchema:
+        - { AttributeName: term, KeyType: HASH }
+        - { AttributeName: class_nbr, KeyType: RANGE }
+
+  AlertsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: classpilot-alerts
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: watcher_id, AttributeType: S }
+        - { AttributeName: seen_at, AttributeType: S }
+      KeySchema:
+        - { AttributeName: watcher_id, KeyType: HASH }
+        - { AttributeName: seen_at, KeyType: RANGE }
+      TimeToLiveSpecification: { AttributeName: expires_at, Enabled: true }
+
+  # --- Seat API --------------------------------------------------------------
+  SeatApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 5
+        ThrottlingBurstLimit: 10
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: classpilot-api
+      Handler: api.handler
+      Timeout: 20
+      LoggingConfig: { LogGroup: !Ref ApiLogs }
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref WatchesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref SectionsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref AlertsTable }
+      Events:
+        CreateWatcher: { Type: HttpApi, Properties: { ApiId: !Ref SeatApi, Method: POST, Path: /watchers } }
+        Sections:      { Type: HttpApi, Properties: { ApiId: !Ref SeatApi, Method: GET, Path: /sections } }
+        AddWatch:      { Type: HttpApi, Properties: { ApiId: !Ref SeatApi, Method: POST, Path: /watches } }
+        RemoveWatch:   { Type: HttpApi, Properties: { ApiId: !Ref SeatApi, Method: DELETE, Path: "/watches/{class_nbr}" } }
+        ListWatches:   { Type: HttpApi, Properties: { ApiId: !Ref SeatApi, Method: GET, Path: /watches } }
+        Alerts:        { Type: HttpApi, Properties: { ApiId: !Ref SeatApi, Method: GET, Path: /alerts } }
+
+  ApiLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /classpilot/api
+      RetentionInDays: 7
+
+  # --- Seat poller -----------------------------------------------------------
+  PollerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: classpilot-poller
+      Handler: poller.handler
+      Timeout: 55
+      ReservedConcurrentExecutions: 1   # never two polls at once, so no duplicate alerts
+      LoggingConfig: { LogGroup: !Ref PollerLogs }
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref WatchesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref SectionsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref AlertsTable }
+      Events:
+        EveryMinute:
+          Type: ScheduleV2
+          Properties:
+            Name: classpilot-poll-every-minute
+            ScheduleExpression: rate(1 minute)
+            RetryPolicy: { MaximumRetryAttempts: 0 }
+
+  PollerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /classpilot/poller
+      RetentionInDays: 7
+
+  # --- Monitoring ------------------------------------------------------------
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Condition: HasEmail
+    Properties:
+      Subscription:
+        - { Protocol: email, Endpoint: !Ref AlertEmail }
+
+  PollerErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: classpilot-poller-errors
+      AlarmDescription: The seat poller failed in 5 of the last 10 minutes.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{ Name: FunctionName, Value: !Ref PollerFunction }]
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 10
+      DatapointsToAlarm: 5
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasEmail, [!Ref AlarmTopic], !Ref AWS::NoValue]
+
+  ApiErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: classpilot-api-5xx
+      AlarmDescription: The Seat API returned 5xx errors.
+      Namespace: AWS/ApiGateway
+      MetricName: 5xx
+      Dimensions:
+        - { Name: ApiId, Value: !Ref SeatApi }
+        - { Name: Stage, Value: $default }
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasEmail, [!Ref AlarmTopic], !Ref AWS::NoValue]
+
+  MonthlyBudget:
+    Type: AWS::Budgets::Budget
+    Condition: HasEmail
+    Properties:
+      Budget:
+        BudgetName: classpilot-monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit: { Amount: 25, Unit: USD }
+      NotificationsWithSubscribers:
+        - Notification: { NotificationType: ACTUAL, ComparisonOperator: GREATER_THAN, Threshold: 10, ThresholdType: ABSOLUTE_VALUE }
+          Subscribers: [{ SubscriptionType: EMAIL, Address: !Ref AlertEmail }]
+        - Notification: { NotificationType: ACTUAL, ComparisonOperator: GREATER_THAN, Threshold: 25, ThresholdType: ABSOLUTE_VALUE }
+          Subscribers: [{ SubscriptionType: EMAIL, Address: !Ref AlertEmail }]
+
+Outputs:
+  ApiUrl:
+    Description: Seat API base URL (seats.py default)
+    Value: !Sub "https://${SeatApi}.execute-api.${AWS::Region}.amazonaws.com"
