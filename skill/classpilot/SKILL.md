@@ -88,6 +88,8 @@ financial aid, a scholarship or a visa depends on your credits."
    seats again, so send it even if the section had open seats when the watch started.
    On yes, open the Add class link from the alert (or the Swap class link if they are
    swapping sections) in the browser and hand it to the student to sign in and confirm.
+   ASU's page opens with an empty class number box, so text the class number with it:
+   "Type 27345 and tap Next."
    Never enroll, drop or swap for them.
 7. "Any seat openings?" or "did a seat open?" runs `python3 scripts/seats.py alerts --recent`,
    which shows every opening from the last 24 hours, including ones a check-in already

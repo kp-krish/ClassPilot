@@ -380,9 +380,12 @@ def cmd_alerts(args):
     print()
     for t in sorted({r["term"] for r in rows}):
         code = term_code(t)
+        nbrs = " or ".join(r["class_nbr"] for r in rows if r["term"] == t)
         print(f"If yes, open in the browser and hand it to the student ({t}):")
         print(f"Add class: {ENROLL_URL.format(term=code)}")
         print(f"Swap class: {SWAP_URL.format(term=code)}")
+        # ASU's page opens with an empty class number box.
+        print(f"With the link, text: Type {nbrs} in the class number box and tap Next.")
     return OK
 
 
